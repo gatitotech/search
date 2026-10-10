@@ -1,16 +1,22 @@
 (() => {
+  const mathPattern = /\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$[^$\n]{1,400}\$/;
   const inline = (target, source) => {
-    const pattern = /\*\*>\s*([^\n<>]+?)\s*<\*\*|>\s*([^\n<>]+?)\s*<|\*\*>\s*([^\n<>]+?)\s*\*\*|`([^`\n]+)`|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*\n]+)\*\*|\*([^*\n]+)\*|~~([^~\n]+)~~/g;
+    const pattern = /(\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$[^$\n]{1,400}\$)|\*\*>\s*([^\n<>]+?)\s*<\*\*|>\s*([^\n<>]+?)\s*<|\*\*>\s*([^\n<>]+?)\s*\*\*|`([^`\n]+)`|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*\n]+)\*\*|\*([^*\n]+)\*|~~([^~\n]+)~~/g;
     let start = 0;
     for (const match of String(source).matchAll(pattern)) {
       if (match.index > start) target.append(document.createTextNode(source.slice(start, match.index)));
-      const answer = match[1] || match[2] || match[3];
-      const kind = answer ? 'mark' : match[4] ? 'code' : match[5] ? 'a' : match[7] ? 'strong' : match[8] ? 'em' : 'del';
+      if (match[1]) {
+        target.append(document.createTextNode(match[1]));
+        start = match.index + match[0].length;
+        continue;
+      }
+      const answer = match[2] || match[3] || match[4];
+      const kind = answer ? 'mark' : match[5] ? 'code' : match[6] ? 'a' : match[8] ? 'strong' : match[9] ? 'em' : 'del';
       const node = document.createElement(kind);
-      node.textContent = answer || match[4] || match[5] || match[7] || match[8] || match[9];
+      node.textContent = answer || match[5] || match[6] || match[8] || match[9] || match[10];
       if (kind === 'mark') node.className = 'summary-answer';
       if (kind === 'a') {
-        node.href = match[6];
+        node.href = match[7];
         node.target = '_blank';
         node.rel = 'noopener noreferrer';
       }
@@ -19,6 +25,36 @@
     }
     if (start < source.length) target.append(document.createTextNode(source.slice(start)));
   };
+
+  let loading;
+  let typesetting = Promise.resolve();
+  const typeset = (target) => {
+    if (!mathPattern.test(target.textContent)) return Promise.resolve();
+    if (!loading) {
+      if (window.MathJax?.typesetPromise) loading = Promise.resolve();
+      else {
+        window.MathJax = {
+          tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true },
+          options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+          startup: { typeset: false }
+        };
+        loading = new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.append(script);
+        });
+      }
+    }
+    const source = target.textContent;
+    return loading.then(async () => {
+      await window.MathJax.startup?.promise;
+      typesetting = typesetting.then(() => source === target.textContent ? window.MathJax.typesetPromise([target]) : undefined).catch(() => {});
+      return typesetting;
+    }).catch(() => {});
+  };
+  const clearMath = (target) => window.MathJax?.typesetClear?.([target]);
 
   const render = (target, source) => {
     target.replaceChildren();
@@ -77,5 +113,5 @@
     flush();
   };
 
-  window.GatitaSearchMarkdown = { render };
+  window.GatitaSearchMarkdown = { render, typeset, clearMath };
 })();

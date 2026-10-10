@@ -114,6 +114,7 @@ body.has-results .home-note { position: absolute; pointer-events: none; opacity:
 .markdown-body pre { padding: .7em; overflow-x: auto; border-radius: 8px; background: var(--surface); }
 .markdown-body pre code { padding: 0; background: none; }
 .markdown-body a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+.markdown-body mjx-container[display="true"] { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
 .markdown-body .summary-answer { padding: 0 .3em; border-radius: 4px; outline: 1px solid color-mix(in srgb,var(--primary) 60%,transparent); background: color-mix(in srgb,var(--primary) 20%,var(--surface)); color: var(--text); font-weight: 700; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .summary-toggle,.summary-status button { border: 0; background: transparent; color: var(--secondary); padding: 0; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
 .summary-toggle { margin-top: 12px; }

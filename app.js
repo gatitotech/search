@@ -303,18 +303,30 @@
   observer.observe($('sentinel'));
 
   let summaryText = '';
+  let renderedSummary = null;
   let summaryExpanded = false;
   let summaryLoading = false;
   let followupHistory = [];
   function renderSummary() {
     const target = $('summaryText');
-    window.GatitaSearchMarkdown.render(target, summaryText);
+    if (renderedSummary !== summaryText) {
+      window.GatitaSearchMarkdown.clearMath(target);
+      window.GatitaSearchMarkdown.render(target, summaryText);
+      renderedSummary = summaryText;
+      window.GatitaSearchMarkdown.typeset(target).then(() => {
+        if (renderedSummary === summaryText) updateSummaryOverflow();
+      });
+    }
     target.classList.toggle('is-collapsed', !summaryExpanded);
+    updateSummaryOverflow();
+    $('summaryFollowup').hidden = !summaryExpanded;
+  }
+  function updateSummaryOverflow() {
+    const target = $('summaryText');
     const overflows = target.scrollHeight > target.clientHeight + 1;
     $('summaryToggle').hidden = !summaryExpanded && !overflows;
     $('summaryToggle').textContent = summaryExpanded ? 'View less' : 'View more';
     $('summaryToggle').setAttribute('aria-expanded', String(summaryExpanded));
-    $('summaryFollowup').hidden = !summaryExpanded;
   }
   $('summaryToggle').addEventListener('click', () => {
     summaryExpanded = !summaryExpanded;
@@ -402,6 +414,7 @@
       });
       item.append(links);
       $('followupAnswers').append(item);
+      window.GatitaSearchMarkdown.typeset(answer);
       followupHistory.push({ question, answer: data.answer });
       $('followupInput').value = '';
       $('followupStatus').textContent = '';
@@ -551,14 +564,17 @@
     loading = false;
     generation += 1;
     summaryText = '';
+    renderedSummary = null;
     summaryExpanded = false;
     summaryLoading = false;
     followupHistory = [];
     $('summaryPanel').hidden = true;
+    window.GatitaSearchMarkdown.clearMath($('summaryText'));
     $('summaryText').replaceChildren();
     $('summarySources').replaceChildren();
     $('summaryToggle').hidden = true;
     $('summaryFollowup').hidden = true;
+    window.GatitaSearchMarkdown.clearMath($('followupAnswers'));
     $('followupAnswers').replaceChildren();
     $('followupInput').value = '';
     $('followupStatus').textContent = '';

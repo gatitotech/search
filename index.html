@@ -10,9 +10,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css">
+  <link rel="stylesheet" href="design.css?v=20261010-markdown">
   <script src="consent.js" defer></script>
-  <script src="app.js?v=20261010-bridge" defer></script>
+  <script src="markdown.js?v=20261010-markdown" defer></script>
+  <script src="app.js?v=20261010-markdown" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#searchInput">Skip to search</a>
@@ -63,7 +64,7 @@
     <div class="content" id="content" hidden>
       <section class="search-summary" id="summaryPanel" aria-labelledby="summaryHeading" hidden>
         <div class="summary-heading"><img id="summaryLogo" src="assets/avatar.webp" alt="" width="20" height="20"><h2 id="summaryHeading">Gatita Instant</h2><span>AI overview</span></div>
-        <div class="summary-body"><p class="summary-status" id="summaryStatus" role="status"></p><div class="summary-text is-collapsed" id="summaryText" aria-live="polite"></div></div>
+        <div class="summary-body"><p class="summary-status" id="summaryStatus" role="status"></p><div class="summary-text markdown-body is-collapsed" id="summaryText" aria-live="polite"></div></div>
         <button class="summary-toggle" id="summaryToggle" type="button" aria-expanded="false" aria-controls="summaryText" hidden>View more</button>
         <nav class="summary-sources" id="summarySources" aria-label="Summary sources"></nav>
         <div class="summary-followup" id="summaryFollowup" hidden>

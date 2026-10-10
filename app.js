@@ -308,7 +308,7 @@
   let followupHistory = [];
   function renderSummary() {
     const target = $('summaryText');
-    target.textContent = summaryText;
+    window.GatitaSearchMarkdown.render(target, summaryText);
     target.classList.toggle('is-collapsed', !summaryExpanded);
     const overflows = target.scrollHeight > target.clientHeight + 1;
     $('summaryToggle').hidden = !summaryExpanded && !overflows;
@@ -382,8 +382,9 @@
       item.className = 'followup-answer';
       const heading = document.createElement('strong');
       heading.textContent = question;
-      const answer = document.createElement('p');
-      answer.textContent = data.answer;
+      const answer = document.createElement('div');
+      answer.className = 'markdown-body';
+      window.GatitaSearchMarkdown.render(answer, data.answer);
       item.append(heading, answer);
       const links = document.createElement('nav');
       links.setAttribute('aria-label', 'Follow-up sources');

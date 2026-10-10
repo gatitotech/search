@@ -122,6 +122,29 @@
 
   let accountRequest = null;
   let avatarGeneration = 0;
+  function readGatitaAccount() {
+    return new Promise((resolve, reject) => {
+      const frame = document.createElement('iframe');
+      frame.hidden = true;
+      frame.title = 'Gatita account status';
+      frame.sandbox = 'allow-scripts allow-same-origin';
+      const finish = (error, user) => {
+        clearTimeout(timer);
+        window.removeEventListener('message', onMessage);
+        frame.remove();
+        if (error) reject(error);
+        else resolve(user);
+      };
+      const onMessage = (event) => {
+        if (event.origin !== 'https://gatita.tech' || event.source !== frame.contentWindow || event.data?.type !== 'gatita-account') return;
+        finish(event.data.error ? new Error('Account unavailable') : null, event.data.user || null);
+      };
+      const timer = setTimeout(() => finish(new Error('Account unavailable')), 10000);
+      window.addEventListener('message', onMessage);
+      frame.src = 'https://gatita.tech/session-bridge.html';
+      document.body.append(frame);
+    });
+  }
   async function setAccountAvatar(user) {
     const generation = ++avatarGeneration;
     const initial = String(user?.displayName || user?.email || 'G').trim().charAt(0).toUpperCase() || 'G';
@@ -154,9 +177,7 @@
     login.searchParams.set('redirect', target.href);
     accountRequest = (async () => {
       try {
-        const response = await fetch('https://api.gatita.tech/ask-api/me', { credentials: 'include' });
-        if (!response.ok) throw new Error('Account unavailable');
-        const { user } = await response.json();
+        const user = await readGatitaAccount();
         setAccountAvatar(user);
         $('accountName').textContent = user ? user.displayName || user.email : 'You’re browsing as a guest';
         $('accountDetail').textContent = user ? user.email : 'Use your existing Gatita account.';

@@ -154,7 +154,7 @@
     login.searchParams.set('redirect', target.href);
     accountRequest = (async () => {
       try {
-        const response = await apiFetch('/me');
+        const response = await fetch('https://api.gatita.tech/ask-api/me', { credentials: 'include' });
         if (!response.ok) throw new Error('Account unavailable');
         const { user } = await response.json();
         setAccountAvatar(user);

@@ -30,4 +30,9 @@ context.window.GatitaSearchMarkdown.render(root, '**>Tarbes is a commune in Fran
 assert.equal(root.children[0].children[0].tagName, 'mark');
 assert.equal(root.children[0].children[0].children[0].text, 'Tarbes is a commune in France');
 assert.equal(root.children[0].children[1].text, ' [2].');
+context.window.GatitaSearchMarkdown.render(root, '>Tarbes is a commune in France< [2].');
+assert.equal(root.children[0].children[0].tagName, 'mark');
+assert.equal(root.children[0].children[0].children[0].text, 'Tarbes is a commune in France');
+context.window.GatitaSearchMarkdown.render(root, '**>Paris is the capital of France<** [1].');
+assert.equal(root.children[0].children[0].children[0].text, 'Paris is the capital of France');
 console.log('Search Markdown OK');

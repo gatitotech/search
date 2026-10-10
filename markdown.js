@@ -1,15 +1,16 @@
 (() => {
   const inline = (target, source) => {
-    const pattern = /\*\*>\s*([^\n<>]+?)\s*<?\*\*|`([^`\n]+)`|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*\n]+)\*\*|\*([^*\n]+)\*|~~([^~\n]+)~~/g;
+    const pattern = /\*\*>\s*([^\n<>]+?)\s*<\*\*|>\s*([^\n<>]+?)\s*<|\*\*>\s*([^\n<>]+?)\s*\*\*|`([^`\n]+)`|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*\n]+)\*\*|\*([^*\n]+)\*|~~([^~\n]+)~~/g;
     let start = 0;
     for (const match of String(source).matchAll(pattern)) {
       if (match.index > start) target.append(document.createTextNode(source.slice(start, match.index)));
-      const kind = match[1] ? 'mark' : match[2] ? 'code' : match[3] ? 'a' : match[5] ? 'strong' : match[6] ? 'em' : 'del';
+      const answer = match[1] || match[2] || match[3];
+      const kind = answer ? 'mark' : match[4] ? 'code' : match[5] ? 'a' : match[7] ? 'strong' : match[8] ? 'em' : 'del';
       const node = document.createElement(kind);
-      node.textContent = match[1] || match[2] || match[3] || match[5] || match[6] || match[7];
+      node.textContent = answer || match[4] || match[5] || match[7] || match[8] || match[9];
       if (kind === 'mark') node.className = 'summary-answer';
       if (kind === 'a') {
-        node.href = match[4];
+        node.href = match[6];
         node.target = '_blank';
         node.rel = 'noopener noreferrer';
       }

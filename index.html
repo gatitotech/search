@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=20261010-latex">
+  <link rel="stylesheet" href="design.css?v=20261010-preview">
   <script src="consent.js" defer></script>
   <script src="markdown.js?v=20261010-latex" defer></script>
-  <script src="app.js?v=20261010-latex" defer></script>
+  <script src="app.js?v=20261010-preview" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#searchInput">Skip to search</a>
@@ -33,6 +33,7 @@
       </form>
       <div class="autocomplete" id="searchSuggestions" role="listbox" aria-label="Search suggestions" hidden></div>
     </div>
+    <p class="result-count" id="resultCount" aria-live="polite"></p>
   </header>
   <aside class="settings-panel" id="settingsPanel" hidden aria-label="Search settings">
     <div class="panel-heading"><div><p class="panel-kicker">GATITA SEARCH</p><h2>Settings</h2></div><button id="closeSettings" type="button" aria-label="Close settings">×</button></div>
@@ -64,7 +65,7 @@
     <div class="content" id="content" hidden>
       <section class="search-summary" id="summaryPanel" aria-labelledby="summaryHeading" hidden>
         <div class="summary-heading"><img id="summaryLogo" src="assets/avatar.webp" alt="" width="20" height="20"><h2 id="summaryHeading">Gatita Instant</h2><span>AI overview</span></div>
-        <div class="summary-body"><p class="summary-status" id="summaryStatus" role="status"></p><div class="summary-text markdown-body is-collapsed" id="summaryText" aria-live="polite"></div></div>
+        <div class="summary-body" id="summaryBody"><p class="summary-status" id="summaryStatus" role="status"></p><div class="summary-text markdown-body is-collapsed" id="summaryText" aria-live="polite"></div></div>
         <button class="summary-toggle" id="summaryToggle" type="button" aria-expanded="false" aria-controls="summaryText" hidden>View more</button>
         <nav class="summary-sources" id="summarySources" aria-label="Summary sources"></nav>
         <div class="summary-followup" id="summaryFollowup" hidden>
@@ -73,7 +74,6 @@
           <p id="followupStatus" role="status"></p>
         </div>
       </section>
-      <div class="results-heading"><span>Web</span><span id="resultCount"></span></div>
       <div class="search-progress" id="searchProgress" hidden role="status"><span class="progress-mark" aria-hidden="true"></span><span>Searching the web</span><span class="loading-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
       <div id="results" class="results" aria-live="polite"></div>
       <div id="loadState" class="load-state" aria-live="polite"></div>

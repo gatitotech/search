@@ -324,6 +324,7 @@
   function updateSummaryOverflow() {
     const target = $('summaryText');
     const overflows = target.scrollHeight > target.clientHeight + 1;
+    $('summaryBody').classList.toggle('is-faded', !summaryExpanded && overflows);
     $('summaryToggle').hidden = !summaryExpanded && !overflows;
     $('summaryToggle').textContent = summaryExpanded ? 'View less' : 'View more';
     $('summaryToggle').setAttribute('aria-expanded', String(summaryExpanded));

@@ -1,6 +1,6 @@
 (() => {
   const inline = (target, source) => {
-    const pattern = /\*\*>\s*([^\n<>]+?)\s*<\*\*|`([^`\n]+)`|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*\n]+)\*\*|\*([^*\n]+)\*|~~([^~\n]+)~~/g;
+    const pattern = /\*\*>\s*([^\n<>]+?)\s*<?\*\*|`([^`\n]+)`|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*\n]+)\*\*|\*([^*\n]+)\*|~~([^~\n]+)~~/g;
     let start = 0;
     for (const match of String(source).matchAll(pattern)) {
       if (match.index > start) target.append(document.createTextNode(source.slice(start, match.index)));

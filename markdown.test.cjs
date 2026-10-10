@@ -26,4 +26,8 @@ assert.equal(root.children[1].tagName, 'ul');
 assert.equal(root.children[1].children.length, 2);
 assert.equal(root.children[2].tagName, 'pre');
 assert.equal(root.children[2].children[0].children[0].text, 'const x = 1;');
+context.window.GatitaSearchMarkdown.render(root, '**>Tarbes is a commune in France** [2].');
+assert.equal(root.children[0].children[0].tagName, 'mark');
+assert.equal(root.children[0].children[0].children[0].text, 'Tarbes is a commune in France');
+assert.equal(root.children[0].children[1].text, ' [2].');
 console.log('Search Markdown OK');

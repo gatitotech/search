@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <title>Gatita Search</title>
+  <meta name="description" content="Search the web with Gatita Search.">
+  <link rel="icon" href="assets/logo.webp" type="image/webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design.css">
+  <script src="consent.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#searchInput">Skip to search</a>
+  <div class="splash" id="splash" aria-hidden="true"><div class="splash-core"><div class="splash-mark"><img id="heroLogo" src="assets/avatar.webp" alt="" width="76" height="76"><span class="splash-sheen"></span></div><span class="splash-label">Gatita Search</span></div></div>
+  <a class="gatita-home-link" href="https://gatita.tech">gatita.tech <span aria-hidden="true">↗</span></a>
+  <button class="settings-button" id="settingsButton" type="button" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><span class="account-avatar" id="accountTriggerAvatar" aria-hidden="true">G</span></button>
+  <header class="topbar" id="topbar">
+    <div class="home-intro">
+      <h1>Gatita <span>Search</span></h1>
+      <p class="home-description">Explore the web with Gatita.</p>
+    </div>
+    <div class="topbar-inner">
+      <form class="search-form" id="searchForm" role="search">
+        <a class="brand" href="./" aria-label="Gatita Search home"><img id="brandLogo" src="assets/avatar.webp" alt="" width="32" height="32"></a>
+        <input id="searchInput" name="q" type="search" placeholder="Search the web" autocomplete="off" enterkeyhint="search" maxlength="300" required aria-label="Search the web" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false">
+        <button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+      </form>
+      <div class="autocomplete" id="searchSuggestions" role="listbox" aria-label="Search suggestions" hidden></div>
+    </div>
+  </header>
+  <aside class="settings-panel" id="settingsPanel" hidden aria-label="Search settings">
+    <div class="panel-heading"><div><p class="panel-kicker">GATITA SEARCH</p><h2>Settings</h2></div><button id="closeSettings" type="button" aria-label="Close settings">×</button></div>
+    <section class="account-section" aria-label="Gatita account">
+      <span class="account-avatar" id="accountPanelAvatar" aria-hidden="true">G</span>
+      <div class="account-copy"><p id="accountName" class="account-name" aria-live="polite">Checking your account…</p><p id="accountDetail" class="account-detail">One account across Gatita.</p></div>
+    </section>
+    <nav class="settings-actions" aria-label="Settings options">
+      <a id="accountLink" class="settings-action" href="https://gatita.tech/?login=1"><span id="accountLinkLabel">Sign in to Gatita</span><span aria-hidden="true">↗</span></a>
+      <button id="appearanceButton" class="settings-action" type="button" aria-expanded="false" aria-controls="themePanel"><span>Appearance</span><span class="action-chevron" aria-hidden="true">⌄</span></button>
+    </nav>
+    <section class="theme-panel" id="themePanel" hidden aria-label="Appearance settings">
+      <p>Choose a theme or fine tune its colors.</p>
+      <div class="presets" role="group" aria-label="Theme presets"><button type="button" data-preset="gatita">Gatita</button><button type="button" data-preset="light">Light</button><button type="button" data-preset="midnight">Midnight</button></div>
+      <label>Background <input type="color" id="themeBg"></label>
+      <label>Surface <input type="color" id="themeSurface"></label>
+      <label>Text <input type="color" id="themeText"></label>
+      <label>Primary <input type="color" id="themePrimary"></label>
+      <label>Secondary <input type="color" id="themeSecondary"></label>
+      <button class="reset-button" id="resetTheme" type="button">Reset colors</button>
+    </section>
+    <div class="settings-footer"><button id="refreshAccount" class="text-button" type="button">Refresh account</button><div class="settings-legal"><a href="https://gatita.tech/legal.html#terms" target="_blank" rel="noopener noreferrer">Terms</a><a href="https://gatita.tech/legal.html#privacy" target="_blank" rel="noopener noreferrer">Privacy</a></div></div>
+  </aside>
+  <main>
+    <section class="home-note" id="hero">
+      <div class="events-heading"><div><p class="suggestions-label">HAPPENING NOW</p><h2>Around the world</h2></div><span>From world news sources</span></div>
+      <div class="home-suggestions" id="homeSuggestions" aria-label="Current world events" aria-live="polite"><p class="events-status">Loading current events…</p></div>
+    </section>
+    <div class="content" id="content" hidden>
+      <section class="search-summary" id="summaryPanel" aria-labelledby="summaryHeading" hidden>
+        <div class="summary-heading"><img id="summaryLogo" src="assets/avatar.webp" alt="" width="20" height="20"><h2 id="summaryHeading">Gatita Instant</h2><span>AI overview</span></div>
+        <div class="summary-body"><p class="summary-status" id="summaryStatus" role="status"></p><div class="summary-text is-collapsed" id="summaryText" aria-live="polite"></div></div>
+        <button class="summary-toggle" id="summaryToggle" type="button" aria-expanded="false" aria-controls="summaryText" hidden>View more</button>
+        <nav class="summary-sources" id="summarySources" aria-label="Summary sources"></nav>
+        <div class="summary-followup" id="summaryFollowup" hidden>
+          <form id="followupForm"><label for="followupInput">Ask a related question</label><div class="followup-row"><input id="followupInput" type="text" maxlength="500" autocomplete="off" placeholder="What else would you like to know?" required><button id="followupSubmit" type="submit">Ask</button></div></form>
+          <div id="followupAnswers" aria-live="polite"></div>
+          <p id="followupStatus" role="status"></p>
+        </div>
+      </section>
+      <div class="results-heading"><span>Web</span><span id="resultCount"></span></div>
+      <div class="search-progress" id="searchProgress" hidden role="status"><span class="progress-mark" aria-hidden="true"></span><span>Searching the web</span><span class="loading-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+      <div id="results" class="results" aria-live="polite"></div>
+      <div id="loadState" class="load-state" aria-live="polite"></div>
+      <div id="sentinel" aria-hidden="true"></div>
+    </div>
+  </main>
+  <footer><span>Gatita Search</span><nav aria-label="Footer"><a href="https://gatita.tech">Visit Gatita <span aria-hidden="true">↗</span></a><a href="https://gatita.tech/legal.html#terms">Terms</a><a href="https://gatita.tech/legal.html#privacy">Privacy</a></nav></footer>
+  <dialog class="legal-gate" id="legalGate" aria-labelledby="legalTitle" aria-describedby="legalDescription">
+    <h2 id="legalTitle">Before you use Gatita Search</h2>
+    <p id="legalDescription">Please read and accept Gatita’s Terms of Service and Privacy Policy to continue.</p>
+    <div class="legal-storage-note"><strong>Required cookies and storage</strong><p>Search uses required cookies and browser storage for your Gatita account, preferences, and remembering your acceptance.</p></div>
+    <label class="legal-check"><input id="legalCheckbox" type="checkbox"><span>I have read and agree to the <a href="https://gatita.tech/legal.html#terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and <a href="https://gatita.tech/legal.html#privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>, and understand that required cookies and storage are necessary for this service.</span></label>
+    <button id="legalAccept" class="legal-accept" type="button" disabled>Accept and continue</button>
+  </dialog>
+  <noscript><p class="noscript-note">Enable JavaScript to review the terms and use Gatita Search.</p></noscript>
+</body>
+</html>

@@ -10,15 +10,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=20261010-preview">
+  <link rel="stylesheet" href="design.css?v=20261010-icons">
   <script src="consent.js" defer></script>
   <script src="markdown.js?v=20261010-latex" defer></script>
-  <script src="app.js?v=20261010-preview" defer></script>
+  <script src="app.js?v=20261010-icons" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#searchInput">Skip to search</a>
   <div class="splash" id="splash" aria-hidden="true"><div class="splash-core"><div class="splash-mark"><img id="heroLogo" src="assets/avatar.webp" alt="" width="76" height="76"><span class="splash-sheen"></span></div><span class="splash-label">Gatita Search</span></div></div>
-  <a class="gatita-home-link" href="https://gatita.tech">gatita.tech <span aria-hidden="true">↗</span></a>
+  <a class="gatita-home-link" href="https://gatita.tech">gatita.tech <svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
   <button class="settings-button" id="settingsButton" type="button" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><span class="account-avatar" id="accountTriggerAvatar" aria-hidden="true">G</span></button>
   <header class="topbar" id="topbar">
     <div class="home-intro">
@@ -42,8 +42,8 @@
       <div class="account-copy"><p id="accountName" class="account-name" aria-live="polite">Checking your account…</p><p id="accountDetail" class="account-detail">One account across Gatita.</p></div>
     </section>
     <nav class="settings-actions" aria-label="Settings options">
-      <a id="accountLink" class="settings-action" href="https://gatita.tech/?login=1"><span id="accountLinkLabel">Sign in to Gatita</span><span aria-hidden="true">↗</span></a>
-      <button id="appearanceButton" class="settings-action" type="button" aria-expanded="false" aria-controls="themePanel"><span>Appearance</span><span class="action-chevron" aria-hidden="true">⌄</span></button>
+      <a id="accountLink" class="settings-action" href="https://gatita.tech/?login=1"><span id="accountLinkLabel">Sign in to Gatita</span><svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+      <button id="appearanceButton" class="settings-action" type="button" aria-expanded="false" aria-controls="themePanel"><span>Appearance</span><svg class="icon-chevron action-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     </nav>
     <section class="theme-panel" id="themePanel" hidden aria-label="Appearance settings">
       <p>Choose a theme or fine tune its colors.</p>
@@ -66,7 +66,7 @@
       <section class="search-summary" id="summaryPanel" aria-labelledby="summaryHeading" hidden>
         <div class="summary-heading"><img id="summaryLogo" src="assets/avatar.webp" alt="" width="20" height="20"><h2 id="summaryHeading">Gatita Instant</h2><span>AI overview</span></div>
         <div class="summary-body" id="summaryBody"><p class="summary-status" id="summaryStatus" role="status"></p><div class="summary-text markdown-body is-collapsed" id="summaryText" aria-live="polite"></div></div>
-        <button class="summary-toggle" id="summaryToggle" type="button" aria-expanded="false" aria-controls="summaryText" hidden>View more</button>
+        <button class="summary-toggle" id="summaryToggle" type="button" aria-expanded="false" aria-controls="summaryText" hidden><span id="summaryToggleLabel">View more</span><svg class="icon-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <nav class="summary-sources" id="summarySources" aria-label="Summary sources"></nav>
         <div class="summary-followup" id="summaryFollowup" hidden>
           <form id="followupForm"><label for="followupInput">Ask a related question</label><div class="followup-row"><input id="followupInput" type="text" maxlength="500" autocomplete="off" placeholder="What else would you like to know?" required><button id="followupSubmit" type="submit">Ask</button></div></form>
@@ -80,7 +80,7 @@
       <div id="sentinel" aria-hidden="true"></div>
     </div>
   </main>
-  <footer><span>Gatita Search</span><nav aria-label="Footer"><a href="https://gatita.tech">Visit Gatita <span aria-hidden="true">↗</span></a><a href="https://gatita.tech/legal.html#terms">Terms</a><a href="https://gatita.tech/legal.html#privacy">Privacy</a></nav></footer>
+  <footer><span>Gatita Search</span><nav aria-label="Footer"><a href="https://gatita.tech">Visit Gatita <svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a><a href="https://gatita.tech/legal.html#terms">Terms</a><a href="https://gatita.tech/legal.html#privacy">Privacy</a></nav></footer>
   <dialog class="legal-gate" id="legalGate" aria-labelledby="legalTitle" aria-describedby="legalDescription">
     <h2 id="legalTitle">Before you use Gatita Search</h2>
     <p id="legalDescription">Please read and accept Gatita’s Terms of Service and Privacy Policy to continue.</p>

@@ -215,7 +215,8 @@
         source.href = event.url;
         source.target = '_blank';
         source.rel = 'noopener noreferrer';
-        source.textContent = `${event.source} ↗`;
+        source.textContent = event.source;
+        source.insertAdjacentHTML('beforeend', '<svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>');
         source.setAttribute('aria-label', `Read on ${event.source}: ${event.title}`);
         row.append(button, source);
         list.append(row);
@@ -326,7 +327,7 @@
     const overflows = target.scrollHeight > target.clientHeight + 1;
     $('summaryBody').classList.toggle('is-faded', !summaryExpanded && overflows);
     $('summaryToggle').hidden = !summaryExpanded && !overflows;
-    $('summaryToggle').textContent = summaryExpanded ? 'View less' : 'View more';
+    $('summaryToggleLabel').textContent = summaryExpanded ? 'View less' : 'View more';
     $('summaryToggle').setAttribute('aria-expanded', String(summaryExpanded));
   }
   $('summaryToggle').addEventListener('click', () => {

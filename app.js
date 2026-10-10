@@ -262,7 +262,7 @@
     const current = ++suggestRequest;
     const value = $('searchInput').value.trim();
     closeSuggestions();
-    if (!legalAccepted || value.length < 3) return;
+    if (!legalAccepted || value.length < 2) return;
     suggestTimer = setTimeout(async () => {
       try {
         const response = await apiFetch(`/suggest?q=${encodeURIComponent(value)}`);

@@ -99,6 +99,22 @@
     $(`theme${key[0].toUpperCase()}${key.slice(1)}`).addEventListener('input', (event) => { theme[key] = event.target.value; applyTheme(); });
   }
   $('resetTheme').addEventListener('click', () => { theme = { ...presets.gatita }; applyTheme(); });
+  const AI_OVERVIEW_KEY = 'gatita-search-ai-overview';
+  let aiOverviewEnabled = true;
+  try { aiOverviewEnabled = localStorage.getItem(AI_OVERVIEW_KEY) !== 'off'; } catch {}
+  function applyAiOverview() {
+    $('aiOverviewToggle').setAttribute('aria-checked', String(aiOverviewEnabled));
+    // $('aiOverviewNote').hidden = aiOverviewEnabled || $('content').hidden;
+  }
+  $('aiOverviewToggle').addEventListener('click', () => {
+    aiOverviewEnabled = !aiOverviewEnabled;
+    try { if (legalAccepted) localStorage.setItem(AI_OVERVIEW_KEY, aiOverviewEnabled ? 'on' : 'off'); } catch {}
+    applyAiOverview();
+    if (!aiOverviewEnabled) { $('summaryPanel').hidden = true; news.pauseBriefing(); } else news.considerBriefing(true);
+    if (aiOverviewEnabled && query && seen.size && !summaryText && !summaryLoading) loadSummary(generation);
+  });
+  $('aiOverviewEnable').addEventListener('click', () => $('aiOverviewToggle').click());
+  applyAiOverview();
   function toggleTheme(open) { $('themePanel').hidden = !open; $('appearanceButton').setAttribute('aria-expanded', String(open)); }
   function toggleSettings(open) {
     $('settingsPanel').hidden = !open;
@@ -179,14 +195,14 @@
       try {
         const user = await readGatitaAccount();
         setAccountAvatar(user);
-        $('accountName').textContent = user ? user.displayName || user.email : 'You’re browsing as a guest';
+        $('accountName').textContent = user ? user.displayName || user.email : 'You\'re browsing as a guest';
         $('accountDetail').textContent = user ? user.email : 'Use your existing Gatita account.';
         $('accountLinkLabel').textContent = user ? 'Manage Gatita account' : 'Sign in to Gatita';
         $('accountLink').href = user ? 'https://gatita.tech/' : login.href;
       } catch {
         setAccountAvatar(null);
-        $('accountName').textContent = 'Account status unavailable';
-        $('accountDetail').textContent = 'You can still search or sign in through Gatita.';
+        $('accountName').textContent = 'Account unavailable';
+        $('accountDetail').textContent = 'You can still search with Gatita.';
         $('accountLinkLabel').textContent = 'Sign in to Gatita';
         $('accountLink').href = login.href;
       } finally { accountRequest = null; }
@@ -196,44 +212,17 @@
   $('refreshAccount').addEventListener('click', refreshAccount);
   window.addEventListener('focus', refreshAccount);
 
-  async function loadWorldEvents() {
-    if (!legalAccepted) return;
-    try {
-      const response = await apiFetch('/trending');
-      if (!response.ok) throw new Error('Current events unavailable');
-      const { events } = await response.json();
-      const list = $('homeSuggestions');
-      list.replaceChildren();
-      for (const event of events) {
-        const row = document.createElement('div');
-        row.className = 'event-row';
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = event.title;
-        button.addEventListener('click', () => search(event.title));
-        const source = document.createElement('a');
-        source.href = event.url;
-        source.target = '_blank';
-        source.rel = 'noopener noreferrer';
-        source.textContent = event.source;
-        source.insertAdjacentHTML('beforeend', '<svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>');
-        source.setAttribute('aria-label', `Read on ${event.source}: ${event.title}`);
-        row.append(button, source);
-        list.append(row);
-      }
-      if (!events.length) throw new Error('Current events unavailable');
-    } catch {
-      $('homeSuggestions').replaceChildren();
-      const status = document.createElement('p');
-      status.className = 'events-status';
-      status.textContent = 'Current events are unavailable right now.';
-      $('homeSuggestions').append(status);
-    }
-  }
+  const appearance = window.GatitaSearchAppearance.init({ canStore: () => legalAccepted });
+  const news = window.GatitaSearchNews.init({ apiFetch, search, canUse: () => legalAccepted, canSummarize: () => aiOverviewEnabled });
+  function loadWorldEvents() { return news.startHome(); }
 
   let suggestTimer;
   let suggestRequest = 0;
+  let suggestController;
   let activeSuggestion = -1;
+  let composing = false;
+  const suggestionCache = new Map();
+  new ResizeObserver(() => { $('searchSuggestions').style.width = `${$('searchForm').getBoundingClientRect().width}px`; }).observe($('searchForm'));
   function closeSuggestions() {
     $('searchSuggestions').hidden = true;
     $('searchInput').setAttribute('aria-expanded', 'false');
@@ -242,49 +231,75 @@
   }
   function renderSuggestions(titles) {
     const list = $('searchSuggestions');
-    list.replaceChildren();
-    activeSuggestion = -1;
-    titles.forEach((title, index) => {
+    list.replaceChildren(); activeSuggestion = -1;
+    const input = $('searchInput').value.trim();
+    list.style.width = `${$('searchForm').getBoundingClientRect().width}px`;
+    [...new Set(titles)].slice(0, 8).forEach((title, index) => {
       const option = document.createElement('div');
-      option.id = `search-suggestion-${index}`;
+      option.id = `search-suggestion-${index}`; option.dataset.query = title;
       option.className = 'autocomplete-option';
-      option.setAttribute('role', 'option');
-      option.setAttribute('aria-selected', 'false');
-      option.textContent = title;
+      option.setAttribute('role', 'option'); option.setAttribute('aria-selected', 'false');
+      const position = title.toLowerCase().indexOf(input.toLowerCase());
+      const text = document.createElement('span');
+      if (position >= 0 && input) {
+        const match = document.createElement('strong'); match.textContent = title.slice(position, position + input.length);
+        text.append(title.slice(0, position), match, title.slice(position + input.length));
+      } else text.textContent = title;
+      const arrow = document.createElement('span'); arrow.className = 'suggestion-arrow'; arrow.setAttribute('aria-hidden', 'true');
+      arrow.insertAdjacentHTML('beforeend', '<svg class="icon-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>');
+      option.append(text, arrow);
       option.addEventListener('mousedown', (event) => event.preventDefault());
-      option.addEventListener('click', () => search(title));
-      list.append(option);
+      option.addEventListener('click', () => search(title)); list.append(option);
     });
-    list.hidden = !titles.length;
-    $('searchInput').setAttribute('aria-expanded', String(Boolean(titles.length)));
+    list.hidden = !list.children.length;
+    $('searchInput').setAttribute('aria-expanded', String(Boolean(list.children.length)));
   }
-  $('searchInput').addEventListener('input', () => {
-    clearTimeout(suggestTimer);
-    const current = ++suggestRequest;
-    const value = $('searchInput').value.trim();
-    closeSuggestions();
-    if (!legalAccepted || value.length < 2) return;
+  function queueSuggestions() {
+    clearTimeout(suggestTimer); suggestController?.abort();
+    const current = ++suggestRequest, value = $('searchInput').value.trim(), key = value.toLowerCase();
+    if (!legalAccepted || value.length < 2 || composing) { closeSuggestions(); return; }
+    let cached = suggestionCache.get(key);
+    if (cached && Date.now() - cached.at > 5 * 60 * 1000) { suggestionCache.delete(key); cached = null; }
+    const immediate = cached?.titles || [...suggestionCache.values()].filter((entry) => Date.now() - entry.at <= 5 * 60 * 1000).flatMap((entry) => entry.titles).filter((item) => item.toLowerCase().startsWith(key));
+    if (immediate.length) renderSuggestions(immediate); else closeSuggestions();
+    if (cached) return;
     suggestTimer = setTimeout(async () => {
+      const controller = new AbortController(); suggestController = controller;
       try {
-        const response = await apiFetch(`/suggest?q=${encodeURIComponent(value)}`);
+        const response = await apiFetch(`/suggest?q=${encodeURIComponent(value)}`, { signal: controller.signal });
         if (!response.ok) return;
         const { suggestions } = await response.json();
-        if (current === suggestRequest && document.activeElement === $('searchInput')) renderSuggestions(suggestions);
+        if (!Array.isArray(suggestions)) return;
+        const titles = suggestions.filter((title) => typeof title === 'string' && title.trim() && title.toLowerCase() !== key).slice(0, 8);
+        suggestionCache.set(key, { titles, at: Date.now() });
+        if (suggestionCache.size > 150) suggestionCache.delete(suggestionCache.keys().next().value);
+        if (current === suggestRequest && document.activeElement === $('searchInput') && !controller.signal.aborted) renderSuggestions(titles);
       } catch {}
-    }, 350);
-  });
+    }, 160);
+  }
+  $('searchInput').addEventListener('input', queueSuggestions);
+  $('searchInput').addEventListener('focus', queueSuggestions);
+  $('searchInput').addEventListener('blur', () => { suggestRequest++; suggestController?.abort(); closeSuggestions(); });
+  $('searchInput').addEventListener('compositionstart', () => { composing = true; clearTimeout(suggestTimer); closeSuggestions(); });
+  $('searchInput').addEventListener('compositionend', () => { composing = false; queueSuggestions(); });
   $('searchInput').addEventListener('keydown', (event) => {
+    if (event.isComposing) return;
     const options = [...$('searchSuggestions').children];
-    if (event.key === 'Escape') { closeSuggestions(); return; }
+    if (event.key === 'Escape') { suggestRequest++; suggestController?.abort(); closeSuggestions(); return; }
     if ($('searchSuggestions').hidden || !options.length) return;
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
       activeSuggestion = (activeSuggestion + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
       options.forEach((option, index) => option.setAttribute('aria-selected', String(index === activeSuggestion)));
       $('searchInput').setAttribute('aria-activedescendant', options[activeSuggestion].id);
+      options[activeSuggestion].scrollIntoView({ block: 'nearest' });
     } else if (event.key === 'Enter' && activeSuggestion >= 0) {
-      event.preventDefault();
-      search(options[activeSuggestion].textContent);
+      event.preventDefault(); search(options[activeSuggestion].dataset.query);
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === '/' && legalAccepted && !$('legalGate').open && !event.ctrlKey && !event.metaKey && !event.altKey && !event.target.closest('input,textarea,select,[contenteditable]')) {
+      event.preventDefault(); $('searchInput').focus(); $('searchInput').select();
     }
   });
   document.addEventListener('click', (event) => {
@@ -297,6 +312,20 @@
   let loading = false;
   let generation = 0;
   let searchStarted = 0;
+  let newsRequested = false;
+  let intelligenceController;
+  async function loadIntelligence(currentGeneration) {
+    intelligenceController?.abort();
+    intelligenceController = new AbortController();
+    try {
+      const response = await apiFetch(`/intelligence?q=${encodeURIComponent(query)}`, { signal: intelligenceController.signal });
+      if (!response.ok) return;
+      const { card } = await response.json();
+      if (currentGeneration !== generation) return;
+      window.GatitaSearchIntelligence.render($('intelligencePanel'), card, search);
+      $('content').classList.toggle('has-intelligence', Boolean(card));
+    } catch { /* Optional answers never interrupt web results. */ }
+  }
   const seen = new Set();
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && hasMore && !loading) loadPage();
@@ -345,6 +374,7 @@
       const response = await apiFetch(`/summary?q=${encodeURIComponent(query)}`);
       const data = await response.json();
       if (currentGeneration !== generation) return;
+      if (!aiOverviewEnabled) { $('summaryPanel').hidden = true; return; }
       if (!response.ok) throw new Error(data.error || 'Summary unavailable.');
       summaryText = data.summary || '';
       if (!summaryText) { $('summaryPanel').hidden = true; return; }
@@ -531,7 +561,9 @@
       if (currentGeneration !== generation) return;
       if (!response.ok) throw new Error(data.error || 'Search unavailable.');
       data.results.forEach(addResult);
-      if (firstPage && data.results.length) loadSummary(currentGeneration);
+      if (firstPage && data.newsRelevant && !newsRequested) { newsRequested = true; news.loadSearch(query); }
+      if (firstPage) loadIntelligence(currentGeneration);
+      if (firstPage && data.results.length && aiOverviewEnabled) loadSummary(currentGeneration);
       page += 1;
       hasMore = Boolean(data.hasMore);
       $('resultCount').textContent = `${seen.size} result${seen.size === 1 ? '' : 's'}${hasMore ? ' and counting' : ''}`;
@@ -559,12 +591,19 @@
     }
     clearTimeout(suggestTimer);
     suggestRequest++;
+    suggestController?.abort();
     closeSuggestions();
+    news.resetSearch();
+    newsRequested = false;
     query = next;
     page = 0;
     hasMore = true;
     loading = false;
     generation += 1;
+    intelligenceController?.abort();
+    $('intelligencePanel').hidden = true;
+    $('intelligencePanel').replaceChildren();
+    $('content').classList.remove('has-intelligence');
     summaryText = '';
     renderedSummary = null;
     summaryExpanded = false;
@@ -586,6 +625,7 @@
     $('resultCount').textContent = '';
     $('searchInput').value = query;
     $('content').hidden = false;
+    applyAiOverview();
     document.body.classList.add('has-results');
     document.querySelector('.home-intro').setAttribute('inert', '');
     $('hero').setAttribute('inert', '');
@@ -593,6 +633,8 @@
     window.scrollTo({ top: 0, behavior: 'instant' });
     if (updateUrl) history.pushState({ q: query }, '', `?q=${encodeURIComponent(query)}`);
     loadPage();
+    loadIntelligence(generation);
+    if (/\b(?:news|latest|breaking|today|tonight|yesterday|recent|recently|current events|this (?:week|month)|live updates?|just happened)\b/i.test(query)) { newsRequested = true; news.loadSearch(query); }
   }
   $('searchForm').addEventListener('submit', (event) => { event.preventDefault(); search($('searchInput').value); });
   window.addEventListener('popstate', () => { const q = new URLSearchParams(location.search).get('q'); if (q) search(q, false); else location.reload(); });
@@ -615,18 +657,19 @@
     $('legalGate').close();
     document.body.classList.remove('consent-locked');
     refreshAccount();
-    loadWorldEvents();
+    appearance.restore();
     const value = pendingSearch || initial;
     pendingSearch = '';
     if (value) search(value, false);
-    else $('searchInput').focus();
+    else { loadWorldEvents(); $('searchInput').focus(); }
   });
   if (!legalAccepted) {
     pendingSearch = initial || '';
     showLegalGate();
   } else {
     refreshAccount();
-    loadWorldEvents();
+    appearance.restore();
     if (initial) search(initial, false);
+    else loadWorldEvents();
   }
 })();

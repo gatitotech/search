@@ -10,20 +10,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=20261010-icons">
+  <link rel="stylesheet" href="design.css?v=20261016-discover">
   <script src="consent.js" defer></script>
   <script src="markdown.js?v=20261010-latex" defer></script>
-  <script src="app.js?v=20261010-icons" defer></script>
+  <script src="intelligence.js?v=20261016" defer></script>
+  <script src="appearance.js?v=20261016" defer></script>
+  <script src="news.js?v=20261016" defer></script>
+  <script src="app.js?v=20261016-discover" defer></script>
 </head>
 <body>
+  <div id="backgroundLayer" class="background-layer" aria-hidden="true"></div>
   <a class="skip-link" href="#searchInput">Skip to search</a>
   <div class="splash" id="splash" aria-hidden="true"><div class="splash-core"><div class="splash-mark"><img id="heroLogo" src="assets/avatar.webp" alt="" width="76" height="76"><span class="splash-sheen"></span></div><span class="splash-label">Gatita Search</span></div></div>
-  <a class="gatita-home-link" href="https://gatita.tech">gatita.tech <svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+
   <button class="settings-button" id="settingsButton" type="button" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><span class="account-avatar" id="accountTriggerAvatar" aria-hidden="true">G</span></button>
   <header class="topbar" id="topbar">
     <div class="home-intro">
       <h1>Gatita <span>Search</span></h1>
-      <p class="home-description">Explore the web with Gatita.</p>
     </div>
     <div class="topbar-inner">
       <form class="search-form" id="searchForm" role="search">
@@ -36,7 +39,7 @@
     <p class="result-count" id="resultCount" aria-live="polite"></p>
   </header>
   <aside class="settings-panel" id="settingsPanel" hidden aria-label="Search settings">
-    <div class="panel-heading"><div><p class="panel-kicker">GATITA SEARCH</p><h2>Settings</h2></div><button id="closeSettings" type="button" aria-label="Close settings">×</button></div>
+    <div class="panel-heading"><div><h2>Settings</h2></div><button id="closeSettings" type="button" aria-label="Close settings">×</button></div>
     <section class="account-section" aria-label="Gatita account">
       <span class="account-avatar" id="accountPanelAvatar" aria-hidden="true">G</span>
       <div class="account-copy"><p id="accountName" class="account-name" aria-live="polite">Checking your account…</p><p id="accountDetail" class="account-detail">One account across Gatita.</p></div>
@@ -44,27 +47,44 @@
     <nav class="settings-actions" aria-label="Settings options">
       <a id="accountLink" class="settings-action" href="https://gatita.tech/?login=1"><span id="accountLinkLabel">Sign in to Gatita</span><svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       <button id="appearanceButton" class="settings-action" type="button" aria-expanded="false" aria-controls="themePanel"><span>Appearance</span><svg class="icon-chevron action-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+      <button id="aiOverviewToggle" class="settings-action" type="button" role="switch" aria-checked="true"><span>Gatita's Results</span><span class="switch" aria-hidden="true"><span class="switch-knob"></span></span></button>
     </nav>
     <section class="theme-panel" id="themePanel" hidden aria-label="Appearance settings">
-      <p>Choose a theme or fine tune its colors.</p>
       <div class="presets" role="group" aria-label="Theme presets"><button type="button" data-preset="gatita">Gatita</button><button type="button" data-preset="light">Light</button><button type="button" data-preset="midnight">Midnight</button></div>
       <label>Background <input type="color" id="themeBg"></label>
       <label>Surface <input type="color" id="themeSurface"></label>
       <label>Text <input type="color" id="themeText"></label>
       <label>Primary <input type="color" id="themePrimary"></label>
       <label>Secondary <input type="color" id="themeSecondary"></label>
+      <label>Backdrop <select id="backgroundStyle" aria-label="Backdrop"><option value="none">Solid color</option><option value="aurora">Aurora</option><option value="dusk">Dusk</option><option value="custom">Your image</option></select></label>
+      <label class="background-upload">Choose an image <input id="backgroundFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label>
+      <p class="appearance-note" id="backgroundStatus" role="status">Images stay in this browser.</p>
+      <button id="removeBackground" class="text-button" type="button">Remove image</button>
+      <label for="backgroundBlur">Blur <output id="backgroundBlurValue">12 px</output></label><input id="backgroundBlur" aria-label="Blur" type="range" min="0" max="40" value="12">
+      <label for="backgroundDim">Dimming <output id="backgroundDimValue">45%</output></label><input id="backgroundDim" aria-label="Dimming" type="range" min="0" max="85" value="45">
+      <label for="textSize">Text size <output id="textSizeValue">14 px</output></label><input id="textSize" aria-label="Text size" type="range" min="12" max="18" value="14">
+      <label>Spacing <select id="resultSpacing" aria-label="Spacing"><option value="comfortable">Comfortable</option><option value="compact">Compact</option><option value="relaxed">Relaxed</option></select></label>
+      <label for="cornerRadius">Corners <output id="cornerRadiusValue">18 px</output></label><input id="cornerRadius" aria-label="Corners" type="range" min="4" max="28" value="18">
+      <label>Motion <select id="motionPreference" aria-label="Motion"><option value="system">Follow system</option><option value="reduced">Reduced</option></select></label>
+      <button id="resetAppearance" class="reset-button" type="button">Reset appearance</button>
       <button class="reset-button" id="resetTheme" type="button">Reset colors</button>
     </section>
     <div class="settings-footer"><button id="refreshAccount" class="text-button" type="button">Refresh account</button><div class="settings-legal"><a href="https://gatita.tech/legal.html#terms" target="_blank" rel="noopener noreferrer">Terms</a><a href="https://gatita.tech/legal.html#privacy" target="_blank" rel="noopener noreferrer">Privacy</a></div></div>
   </aside>
   <main>
     <section class="home-note" id="hero">
-      <div class="events-heading"><div><p class="suggestions-label">HAPPENING NOW</p><h2>Around the world</h2></div><span>From world news sources</span></div>
-      <div class="home-suggestions" id="homeSuggestions" aria-label="Current world events" aria-live="polite"><p class="events-status">Loading current events…</p></div>
+      <div class="events-heading"><h2>Around the world</h2><button id="refreshNews" class="text-button" type="button">Refresh</button></div>
+      <section id="newsBriefing" class="news-briefing" aria-label="News summary" hidden><div class="briefing-heading"><h3>Gatita's news summary</h3><button id="briefingToggle" type="button" aria-expanded="true" aria-controls="briefingBody">Hide</button></div><div id="briefingBody"><p id="briefingStatus" role="status"></p><div id="briefingText" class="markdown-body"></div><nav id="briefingSources" aria-label="News summary sources"></nav></div></section>
+      <div class="news-grid" id="homeSuggestions" aria-label="News stories"></div>
+      <div id="homeNewsStatus" class="news-status" role="status"></div><button id="moreNews" class="more-news" type="button" hidden>Load more</button><div id="homeNewsSentinel" aria-hidden="true"></div>
     </section>
     <div class="content" id="content" hidden>
+      <section id="searchNewsPanel" class="search-news" aria-labelledby="searchNewsHeading" hidden><div class="events-heading"><h2 id="searchNewsHeading">Recent coverage</h2><div class="news-scroll-controls"><button id="newsPrevious" type="button" aria-label="Previous stories"><svg class="icon-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button><button id="newsNext" type="button" aria-label="Next stories"><svg class="icon-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button></div></div><div id="searchNewsTrack" class="news-track" tabindex="0" aria-label="Recent news stories"></div><p id="searchNewsStatus" class="news-status" role="status"></p></section>
+      <aside id="intelligencePanel" class="intelligence-panel" aria-label="Intelligent result" aria-live="polite" hidden></aside>
+      <div class="web-column">
+      <p class="ai-overview-note" id="aiOverviewNote" hidden>Gatita's Results are off.<button id="aiOverviewEnable" type="button">Turn on</button></p>
       <section class="search-summary" id="summaryPanel" aria-labelledby="summaryHeading" hidden>
-        <div class="summary-heading"><img id="summaryLogo" src="assets/avatar.webp" alt="" width="20" height="20"><h2 id="summaryHeading">Gatita Instant</h2><span>AI overview</span></div>
+        <div class="summary-heading"><img id="summaryLogo" src="assets/avatar.webp" alt="" width="20" height="20"><h2 id="summaryHeading">Gatita's Results</h2></div>
         <div class="summary-body" id="summaryBody"><p class="summary-status" id="summaryStatus" role="status"></p><div class="summary-text markdown-body is-collapsed" id="summaryText" aria-live="polite"></div></div>
         <button class="summary-toggle" id="summaryToggle" type="button" aria-expanded="false" aria-controls="summaryText" hidden><span id="summaryToggleLabel">View more</span><svg class="icon-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <nav class="summary-sources" id="summarySources" aria-label="Summary sources"></nav>
@@ -78,12 +98,13 @@
       <div id="results" class="results" aria-live="polite"></div>
       <div id="loadState" class="load-state" aria-live="polite"></div>
       <div id="sentinel" aria-hidden="true"></div>
+      </div>
     </div>
   </main>
-  <footer><span>Gatita Search</span><nav aria-label="Footer"><a href="https://gatita.tech">Visit Gatita <svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a><a href="https://gatita.tech/legal.html#terms">Terms</a><a href="https://gatita.tech/legal.html#privacy">Privacy</a></nav></footer>
+  <footer><a href="https://gatito.tech/">©Gatito Labs 2026</a><nav aria-label="Footer"><a href="https://gatita.tech">Gatita Ask <svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a><a href="https://gatita.tech/legal.html#terms">Terms</a><a href="https://gatita.tech/legal.html#privacy">Privacy</a></nav></footer>
   <dialog class="legal-gate" id="legalGate" aria-labelledby="legalTitle" aria-describedby="legalDescription">
     <h2 id="legalTitle">Before you use Gatita Search</h2>
-    <p id="legalDescription">Please read and accept Gatita’s Terms of Service and Privacy Policy to continue.</p>
+    <p id="legalDescription">Please read and accept Gatita's Terms of Service and Privacy Policy to continue.</p>
     <div class="legal-storage-note"><strong>Required cookies and storage</strong><p>Search uses required cookies and browser storage for your Gatita account, preferences, and remembering your acceptance.</p></div>
     <label class="legal-check"><input id="legalCheckbox" type="checkbox"><span>I have read and agree to the <a href="https://gatita.tech/legal.html#terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and <a href="https://gatita.tech/legal.html#privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>, and understand that required cookies and storage are necessary for this service.</span></label>
     <button id="legalAccept" class="legal-accept" type="button" disabled>Accept and continue</button>

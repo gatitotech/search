@@ -10,13 +10,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=20261016-discover">
+  <link rel="stylesheet" href="design.css?v=20261018-dimming">
   <script src="consent.js" defer></script>
   <script src="markdown.js?v=20261010-latex" defer></script>
   <script src="intelligence.js?v=20261016" defer></script>
-  <script src="appearance.js?v=20261016" defer></script>
+  <script src="appearance.js?v=20261018-dimming" defer></script>
   <script src="news.js?v=20261016" defer></script>
-  <script src="app.js?v=20261016-discover" defer></script>
+  <script src="spelling.js?v=20261018" defer></script>
+  <script src="app.js?v=20261018-dimming" defer></script>
 </head>
 <body>
   <div id="backgroundLayer" class="background-layer" aria-hidden="true"></div>
@@ -61,7 +62,7 @@
       <p class="appearance-note" id="backgroundStatus" role="status">Images stay in this browser.</p>
       <button id="removeBackground" class="text-button" type="button">Remove image</button>
       <label for="backgroundBlur">Blur <output id="backgroundBlurValue">12 px</output></label><input id="backgroundBlur" aria-label="Blur" type="range" min="0" max="40" value="12">
-      <label for="backgroundDim">Dimming <output id="backgroundDimValue">45%</output></label><input id="backgroundDim" aria-label="Dimming" type="range" min="0" max="85" value="45">
+      <label for="backgroundDim">Dimming <output id="backgroundDimValue">0%</output></label><input id="backgroundDim" aria-label="Dimming" type="range" min="0" max="85" value="0">
       <label for="textSize">Text size <output id="textSizeValue">14 px</output></label><input id="textSize" aria-label="Text size" type="range" min="12" max="18" value="14">
       <label>Spacing <select id="resultSpacing" aria-label="Spacing"><option value="comfortable">Comfortable</option><option value="compact">Compact</option><option value="relaxed">Relaxed</option></select></label>
       <label for="cornerRadius">Corners <output id="cornerRadiusValue">18 px</output></label><input id="cornerRadius" aria-label="Corners" type="range" min="4" max="28" value="18">
@@ -82,6 +83,7 @@
       <section id="searchNewsPanel" class="search-news" aria-labelledby="searchNewsHeading" hidden><div class="events-heading"><h2 id="searchNewsHeading">Recent coverage</h2><div class="news-scroll-controls"><button id="newsPrevious" type="button" aria-label="Previous stories"><svg class="icon-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button><button id="newsNext" type="button" aria-label="Next stories"><svg class="icon-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button></div></div><div id="searchNewsTrack" class="news-track" tabindex="0" aria-label="Recent news stories"></div><p id="searchNewsStatus" class="news-status" role="status"></p></section>
       <aside id="intelligencePanel" class="intelligence-panel" aria-label="Intelligent result" aria-live="polite" hidden></aside>
       <div class="web-column">
+      <div id="spellingNotice" class="spelling-notice" aria-live="polite" hidden></div>
       <p class="ai-overview-note" id="aiOverviewNote" hidden>Gatita's Results are off.<button id="aiOverviewEnable" type="button">Turn on</button></p>
       <section class="search-summary" id="summaryPanel" aria-labelledby="summaryHeading" hidden>
         <div class="summary-heading"><img id="summaryLogo" src="assets/avatar.webp" alt="" width="20" height="20"><h2 id="summaryHeading">Gatita's Results</h2></div>

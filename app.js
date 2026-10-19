@@ -214,6 +214,7 @@
 
   const appearance = window.GatitaSearchAppearance.init({ canStore: () => legalAccepted });
   const news = window.GatitaSearchNews.init({ apiFetch, search, canUse: () => legalAccepted, canSummarize: () => aiOverviewEnabled });
+  const spelling = window.GatitaSearchSpelling.init({ apiFetch, search });
   function loadWorldEvents() { return news.startHome(); }
 
   let suggestTimer;
@@ -260,7 +261,8 @@
     if (!legalAccepted || value.length < 2 || composing) { closeSuggestions(); return; }
     let cached = suggestionCache.get(key);
     if (cached && Date.now() - cached.at > 5 * 60 * 1000) { suggestionCache.delete(key); cached = null; }
-    const immediate = cached?.titles || [...suggestionCache.values()].filter((entry) => Date.now() - entry.at <= 5 * 60 * 1000).flatMap((entry) => entry.titles).filter((item) => item.toLowerCase().startsWith(key));
+    const official = ['Gatito Labs', 'Gatita AI', 'Gatita Ask', 'Gatita Search'].filter((name) => name.toLowerCase().startsWith(key) && name.toLowerCase() !== key);
+    const immediate = cached?.titles || [...official, ...[...suggestionCache.values()].filter((entry) => Date.now() - entry.at <= 5 * 60 * 1000).flatMap((entry) => entry.titles).filter((item) => item.toLowerCase().startsWith(key))];
     if (immediate.length) renderSuggestions(immediate); else closeSuggestions();
     if (cached) return;
     suggestTimer = setTimeout(async () => {
@@ -307,6 +309,9 @@
   });
 
   let query = '';
+  let requestQuery = '';
+  let spellingLiteral = false;
+  let correctionOriginal = '';
   let page = 0;
   let hasMore = false;
   let loading = false;
@@ -318,7 +323,7 @@
     intelligenceController?.abort();
     intelligenceController = new AbortController();
     try {
-      const response = await apiFetch(`/intelligence?q=${encodeURIComponent(query)}`, { signal: intelligenceController.signal });
+      const response = await apiFetch(`/intelligence?q=${encodeURIComponent(requestQuery)}`, { signal: intelligenceController.signal });
       if (!response.ok) return;
       const { card } = await response.json();
       if (currentGeneration !== generation) return;
@@ -371,7 +376,7 @@
     $('summaryStatus').hidden = false;
     $('summaryStatus').textContent = 'Reading the search results…';
     try {
-      const response = await apiFetch(`/summary?q=${encodeURIComponent(query)}`);
+      const response = await apiFetch(`/summary?q=${encodeURIComponent(requestQuery)}`);
       const data = await response.json();
       if (currentGeneration !== generation) return;
       if (!aiOverviewEnabled) { $('summaryPanel').hidden = true; return; }
@@ -417,7 +422,7 @@
       const response = await apiFetch('/followup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: query, question, history: followupHistory.slice(-3) })
+        body: JSON.stringify({ q: requestQuery, question, history: followupHistory.slice(-3) })
       });
       const data = await response.json();
       if (currentGeneration !== generation) return;
@@ -553,7 +558,7 @@
     }
     setState(firstPage ? '' : 'Loading more results…');
     try {
-      const response = await apiFetch(`/search?q=${encodeURIComponent(query)}&page=${page}`);
+      const response = await apiFetch(`/search?q=${encodeURIComponent(requestQuery)}&page=${page}`);
       const data = await response.json();
       if (firstPage && !reducedMotion.matches) {
         await new Promise((resolve) => setTimeout(resolve, Math.max(0, 560 - (performance.now() - searchStarted))));
@@ -561,8 +566,9 @@
       if (currentGeneration !== generation) return;
       if (!response.ok) throw new Error(data.error || 'Search unavailable.');
       data.results.forEach(addResult);
-      if (firstPage && data.newsRelevant && !newsRequested) { newsRequested = true; news.loadSearch(query); }
+      if (firstPage && !spellingLiteral && data.newsRelevant && !newsRequested) { newsRequested = true; news.loadSearch(query); }
       if (firstPage) loadIntelligence(currentGeneration);
+      if (firstPage && !spellingLiteral && !correctionOriginal) spelling.load(query);
       if (firstPage && data.results.length && aiOverviewEnabled) loadSummary(currentGeneration);
       page += 1;
       hasMore = Boolean(data.hasMore);
@@ -581,7 +587,7 @@
       }
     }
   }
-  function search(value, updateUrl = true) {
+  function search(value, updateUrl = true, { original = '', literal = false } = {}) {
     const next = value.trim().slice(0, 300);
     if (!next) return;
     if (!legalAccepted) {
@@ -596,6 +602,10 @@
     news.resetSearch();
     newsRequested = false;
     query = next;
+    spellingLiteral = Boolean(literal);
+    correctionOriginal = typeof original === 'string' ? original.trim().slice(0, 160) : '';
+    requestQuery = spellingLiteral ? window.GatitaSearchSpelling.literalQuery(query) : query;
+    spelling.reset(query, { original: correctionOriginal });
     page = 0;
     hasMore = true;
     loading = false;
@@ -631,13 +641,22 @@
     $('hero').setAttribute('inert', '');
     $('hero').setAttribute('aria-hidden', 'true');
     window.scrollTo({ top: 0, behavior: 'instant' });
-    if (updateUrl) history.pushState({ q: query }, '', `?q=${encodeURIComponent(query)}`);
+    if (updateUrl) {
+      const params = new URLSearchParams({ q: query });
+      if (correctionOriginal) params.set('original', correctionOriginal);
+      if (spellingLiteral) params.set('literal', '1');
+      history.pushState({ q: query }, '', `?${params}`);
+    }
     loadPage();
     loadIntelligence(generation);
-    if (/\b(?:news|latest|breaking|today|tonight|yesterday|recent|recently|current events|this (?:week|month)|live updates?|just happened)\b/i.test(query)) { newsRequested = true; news.loadSearch(query); }
+    if (!spellingLiteral && /\b(?:news|latest|breaking|today|tonight|yesterday|recent|recently|current events|this (?:week|month)|live updates?|just happened)\b/i.test(query)) { newsRequested = true; news.loadSearch(query); }
   }
   $('searchForm').addEventListener('submit', (event) => { event.preventDefault(); search($('searchInput').value); });
-  window.addEventListener('popstate', () => { const q = new URLSearchParams(location.search).get('q'); if (q) search(q, false); else location.reload(); });
+  window.addEventListener('popstate', () => { const q = new URLSearchParams(location.search).get('q'); if (q) search(q, false, spellingOptions()); else location.reload(); });
+  function spellingOptions() {
+    const params = new URLSearchParams(location.search);
+    return { original: String(params.get('original') || '').slice(0, 160), literal: params.get('literal') === '1' };
+  }
   const initial = new URLSearchParams(location.search).get('q');
   $('legalGate').addEventListener('cancel', (event) => event.preventDefault());
   $('legalGate').addEventListener('close', () => {
@@ -660,7 +679,7 @@
     appearance.restore();
     const value = pendingSearch || initial;
     pendingSearch = '';
-    if (value) search(value, false);
+    if (value) search(value, false, spellingOptions());
     else { loadWorldEvents(); $('searchInput').focus(); }
   });
   if (!legalAccepted) {
@@ -669,7 +688,7 @@
   } else {
     refreshAccount();
     appearance.restore();
-    if (initial) search(initial, false);
+    if (initial) search(initial, false, spellingOptions());
     else loadWorldEvents();
   }
 })();

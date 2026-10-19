@@ -8,7 +8,7 @@
   const clamp = (value, min, max, fallback) => Number.isFinite(Number(value)) ? Math.min(max, Math.max(min, Number(value))) : fallback;
   function normalize(value = {}) {
     return { background: ['none', 'aurora', 'dusk', 'custom'].includes(value.background) ? value.background : defaults.background,
-      blur: clamp(value.blur, 0, 40, 12), dim: clamp(value.dim, 0, 85, 45), size: clamp(value.size, 12, 18, 14),
+      blur: clamp(value.blur, 0, 40, 12), dim: clamp(value.dim, 0, 85, defaults.dim), size: clamp(value.size, 12, 18, 14),
       radius: clamp(value.radius, 4, 28, 18), spacing: ['comfortable', 'compact', 'relaxed'].includes(value.spacing) ? value.spacing : defaults.spacing,
       motion: value.motion === 'reduced' ? 'reduced' : 'system' };
   }

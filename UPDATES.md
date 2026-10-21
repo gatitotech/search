@@ -2,7 +2,7 @@
 
 ## Make it yours
 
-The Customize button opens four small editors: Top bar, Footer, Backdrop, and Reading & layout. The footer and home news heading also have direct customization shortcuts. Changes preview immediately, save in this browser after acceptance, and each section can reset independently. Existing backdrop, image, reading, and theme preferences carry over.
+The paintbrush button opens a compact editor with four section tabs: Top bar, Footer, Backdrop, and Layout. On phones, the editor sits at the bottom of the screen with a scrollable controls area and persistent section tabs. Desktop uses a single panel beside the page. Extra captions and inline customization buttons have been removed. Changes preview immediately, save in this browser after acceptance, and each section can reset independently. Existing backdrop, image, reading, and theme preferences carry over.
 
 Top bar and footer each offer Solid, Soft glass, and Clear presets plus independent opacity and blur sliders. They use the current theme colors. The top bar also supports search-field opacity, scrolling or sticky placement, three heights, and a logo toggle. Footer options include pinned or page-end placement, centered alignment, compact spacing, and its divider.
 

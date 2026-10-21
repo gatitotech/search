@@ -10,14 +10,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=20261021-customize">
+  <link rel="stylesheet" href="design.css?v=20261021-refined">
   <script src="consent.js" defer></script>
   <script src="markdown.js?v=20261010-latex" defer></script>
   <script src="intelligence.js?v=20261016" defer></script>
-  <script src="appearance.js?v=20261021-customize" defer></script>
+  <script src="appearance.js?v=20261021-refined" defer></script>
   <script src="news.js?v=20261016" defer></script>
   <script src="spelling.js?v=20261018" defer></script>
-  <script src="app.js?v=20261021-customize" defer></script>
+  <script src="app.js?v=20261021-refined" defer></script>
 </head>
 <body>
   <div id="backgroundLayer" class="background-layer" aria-hidden="true"></div>
@@ -25,11 +25,7 @@
   <div class="splash" id="splash" aria-hidden="true"><div class="splash-core"><div class="splash-mark"><img id="heroLogo" src="assets/avatar.webp" alt="" width="76" height="76"><span class="splash-sheen"></span></div><span class="splash-label">Gatita Search</span></div></div>
 
   <button class="settings-button" id="settingsButton" type="button" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><span class="account-avatar" id="accountTriggerAvatar" aria-hidden="true">G</span></button>
-  <button id="customizeButton" class="customize-button" type="button" aria-expanded="false" aria-controls="customizeDock">✧ Customize</button>
-  <nav id="customizeDock" class="customize-dock" aria-label="Customize your space" hidden>
-    <p>Make yourself at home <span>Changes preview instantly</span></p>
-    <div><button type="button" data-customize="topbar" aria-controls="customize-topbar" aria-expanded="false">Top bar</button><button type="button" data-customize="footer" aria-controls="customize-footer" aria-expanded="false">Footer</button><button type="button" data-customize="backdrop" aria-controls="customize-backdrop" aria-expanded="false">Backdrop</button><button type="button" data-customize="reading" aria-controls="customize-reading" aria-expanded="false">Reading & layout</button></div>
-  </nav>
+  <button id="customizeButton" class="customize-button" type="button" aria-expanded="false" aria-controls="customizeWorkspace" aria-label="Customize" title="Customize"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 12 9-9a2.12 2.12 0 0 1 3 3l-9 9-3-3Z"/><path d="M9 12c-4-1-6 2-6 5 0 2-1 3-2 4 4 1 8 0 10-2 1-1 2-3 1-4"/></svg><span>Customize</span></button>
   <header class="topbar" id="topbar">
     <div class="home-intro">
       <h1>Gatita <span>Search</span></h1>
@@ -42,7 +38,6 @@
       </form>
       <div class="autocomplete" id="searchSuggestions" role="listbox" aria-label="Search suggestions" hidden></div>
     </div>
-    <button class="area-customize topbar-customize" type="button" data-customize="topbar" aria-controls="customize-topbar" aria-expanded="false">✧ Top bar</button>
     <p class="result-count" id="resultCount" aria-live="polite"></p>
   </header>
   <aside class="settings-panel" id="settingsPanel" hidden aria-label="Search settings">
@@ -69,7 +64,7 @@
   </aside>
   <main>
     <section class="home-note" id="hero">
-      <div class="events-heading"><h2>Around the world</h2><button type="button" class="text-button" data-customize="reading" aria-controls="customize-reading" aria-expanded="false">Customize layout</button><button id="refreshNews" class="text-button" type="button">Refresh</button></div>
+      <div class="events-heading"><h2>Around the world</h2><button id="refreshNews" class="text-button" type="button">Refresh</button></div>
       <section id="newsBriefing" class="news-briefing" aria-label="News summary" hidden><div class="briefing-heading"><h3>Gatita's news summary</h3><button id="briefingToggle" type="button" aria-expanded="true" aria-controls="briefingBody">Hide</button></div><div id="briefingBody"><p id="briefingStatus" role="status"></p><div id="briefingText" class="markdown-body"></div><nav id="briefingSources" aria-label="News summary sources"></nav></div></section>
       <div class="news-grid" id="homeSuggestions" aria-label="News stories"></div>
       <div id="homeNewsStatus" class="news-status" role="status"></div><button id="moreNews" class="more-news" type="button" hidden>Load more</button><div id="homeNewsSentinel" aria-hidden="true"></div>
@@ -98,9 +93,18 @@
       </div>
     </div>
   </main>
-  <footer id="siteFooter"><a href="https://gatito.tech/">©Gatito Labs 2026</a><nav aria-label="Footer"><a href="https://gatita.tech">Gatita Ask <svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a><a href="https://gatita.tech/legal.html#terms">Terms</a><a href="https://gatita.tech/legal.html#privacy">Privacy</a></nav><button type="button" class="area-customize" data-customize="footer" aria-controls="customize-footer" aria-expanded="false">✧ Footer</button></footer>
-  <section id="customize-topbar" class="customize-panel theme-panel" hidden aria-labelledby="customize-topbar-title">
-    <div class="customize-heading"><div><h2 id="customize-topbar-title">Top bar</h2><p>Your colors. Your kind of glass.</p></div><button type="button" data-close-customize aria-label="Close top bar customization">×</button></div>
+  <footer id="siteFooter"><a href="https://gatito.tech/">©Gatito Labs 2026</a><nav aria-label="Footer"><a href="https://gatita.tech">Gatita Ask <svg class="icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a><a href="https://gatita.tech/legal.html#terms">Terms</a><a href="https://gatita.tech/legal.html#privacy">Privacy</a></nav></footer>
+  <aside id="customizeWorkspace" class="customize-workspace" hidden aria-labelledby="customizeTitle">
+    <div class="customize-heading"><h2 id="customizeTitle">Customize</h2><button id="closeCustomize" type="button" aria-label="Close customization">×</button></div>
+    <p id="customizeStatus" class="customize-status" role="status" hidden></p>
+    <nav id="customizeDock" class="customize-tabs" aria-label="Customization sections">
+      <button type="button" data-customize="topbar" aria-controls="customize-topbar" aria-expanded="false">Top bar</button>
+      <button type="button" data-customize="footer" aria-controls="customize-footer" aria-expanded="false">Footer</button>
+      <button type="button" data-customize="backdrop" aria-controls="customize-backdrop" aria-expanded="false">Backdrop</button>
+      <button type="button" data-customize="reading" aria-controls="customize-reading" aria-expanded="false">Layout</button>
+    </nav>
+  <section id="customize-topbar" class="customize-panel theme-panel" hidden aria-label="topbar customization">
+
     <div class="surface-presets" role="group" aria-label="Surface presets"><button type="button" data-surface-preset="topbar:solid" aria-pressed="false">Solid</button><button type="button" data-surface-preset="topbar:soft" aria-pressed="false">Soft glass</button><button type="button" data-surface-preset="topbar:clear" aria-pressed="false">Clear</button></div>
     <label for="topbarOpacity">Opacity<output id="topbarOpacityValue">100%</output></label>
     <input id="topbarOpacity" data-appearance="topbarOpacity" type="range" min="0" max="100" value="100">
@@ -114,11 +118,11 @@
     <select id="topbarDensity" data-appearance="topbarDensity"><option value="comfortable">Comfortable</option><option value="compact">Compact</option><option value="roomy">Roomy</option></select>
     <label class="customize-check"><span>Show search logo</span>
     <input id="showBrand" data-appearance="showBrand" type="checkbox" checked></label>
-    <div class="customize-bottom"><span>Saved on this device</span><button type="button" class="text-button" data-reset-section="topbar">Reset top bar</button></div>
+    <div class="customize-bottom"><button type="button" class="text-button" data-reset-section="topbar">Reset top bar</button></div>
   </section>
 
-  <section id="customize-footer" class="customize-panel theme-panel" hidden aria-labelledby="customize-footer-title">
-    <div class="customize-heading"><div><h2 id="customize-footer-title">Footer</h2><p>Give the finishing touch your own feel.</p></div><button type="button" data-close-customize aria-label="Close footer customization">×</button></div>
+  <section id="customize-footer" class="customize-panel theme-panel" hidden aria-label="footer customization">
+
     <div class="surface-presets" role="group" aria-label="Surface presets"><button type="button" data-surface-preset="footer:solid" aria-pressed="false">Solid</button><button type="button" data-surface-preset="footer:soft" aria-pressed="false">Soft glass</button><button type="button" data-surface-preset="footer:clear" aria-pressed="false">Clear</button></div>
     <label for="footerOpacity">Opacity<output id="footerOpacityValue">92%</output></label>
     <input id="footerOpacity" data-appearance="footerOpacity" type="range" min="0" max="100" value="92">
@@ -132,17 +136,17 @@
     <input id="footerCompact" data-appearance="footerCompact" type="checkbox" checked></label>
     <label class="customize-check"><span>Show divider</span>
     <input id="footerBorder" data-appearance="footerBorder" type="checkbox" checked></label>
-    <div class="customize-bottom"><span>Saved on this device</span><button type="button" class="text-button" data-reset-section="footer">Reset footer</button></div>
+    <div class="customize-bottom"><button type="button" class="text-button" data-reset-section="footer">Reset footer</button></div>
   </section>
 
-  <section id="customize-backdrop" class="customize-panel theme-panel" hidden aria-labelledby="customize-backdrop-title">
-    <div class="customize-heading"><div><h2 id="customize-backdrop-title">Backdrop</h2><p>Set the scene with a backdrop or your own image.</p></div><button type="button" data-close-customize aria-label="Close backdrop customization">×</button></div>
+  <section id="customize-backdrop" class="customize-panel theme-panel" hidden aria-label="backdrop customization">
+
     <label>Backdrop
     <select id="backgroundStyle" aria-label="Backdrop"><option value="none">Solid color</option><option value="aurora">Aurora</option><option value="dusk">Dusk</option><option value="custom">Your image</option></select></label>
 
     <label class="background-upload">Choose an image
     <input id="backgroundFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label>
-      <p class="appearance-note" id="backgroundStatus" role="status">Images stay in this browser.</p>
+      <p class="appearance-note" id="backgroundStatus" role="status"></p>
       <button id="removeBackground" class="text-button" type="button">Remove image</button>
 
     <label for="backgroundBlur">Blur <output id="backgroundBlurValue">12 px</output></label>
@@ -151,11 +155,11 @@
     <label for="backgroundDim">Dimming <output id="backgroundDimValue">0%</output></label>
     <input id="backgroundDim" aria-label="Dimming" type="range" min="0" max="85" value="0">
 
-    <div class="customize-bottom"><span>Saved on this device</span><button type="button" class="text-button" data-reset-section="backdrop">Reset backdrop</button></div>
+    <div class="customize-bottom"><button type="button" class="text-button" data-reset-section="backdrop">Reset backdrop</button></div>
   </section>
 
-  <section id="customize-reading" class="customize-panel theme-panel" hidden aria-labelledby="customize-reading-title">
-    <div class="customize-heading"><div><h2 id="customize-reading-title">Reading & layout</h2><p>A little more room. A little more you.</p></div><button type="button" data-close-customize aria-label="Close reading & layout customization">×</button></div>
+  <section id="customize-reading" class="customize-panel theme-panel" hidden aria-label="reading customization">
+
     <label for="textSize">Text size <output id="textSizeValue">14 px</output></label>
     <input id="textSize" aria-label="Text size" type="range" min="12" max="18" value="14">
 
@@ -176,8 +180,9 @@
     <input id="showNews" data-appearance="showNews" type="checkbox" checked></label>
     <label class="customize-check"><span>Show news images</span>
     <input id="showNewsImages" data-appearance="showNewsImages" type="checkbox" checked></label>
-    <div class="customize-bottom"><span>Saved on this device</span><button type="button" class="text-button" data-reset-section="reading">Reset reading & layout</button></div>
+    <div class="customize-bottom"><button type="button" class="text-button" data-reset-section="reading">Reset layout</button></div>
   </section>
+  </aside>
   <dialog class="legal-gate" id="legalGate" aria-labelledby="legalTitle" aria-describedby="legalDescription">
     <h2 id="legalTitle">Before you use Gatita Search</h2>
     <p id="legalDescription">Please read and accept Gatita's Terms of Service and Privacy Policy to continue.</p>

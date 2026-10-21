@@ -52,7 +52,8 @@
     const save = () => {
       let saved = false;
       if (canStore()) try { localStorage.setItem(KEY, JSON.stringify(prefs)); saved = true; } catch {}
-      document.querySelectorAll('.customize-bottom>span').forEach((note) => { note.textContent = saved ? 'Saved on this device' : 'Applied for this session'; });
+      $('customizeStatus').hidden = saved;
+      $('customizeStatus').textContent = saved ? '' : 'Changes apply for this session.';
     };
     function apply() {
       const root = document.documentElement;
@@ -148,44 +149,37 @@
       catch { $('backgroundStatus').textContent = 'Image removed for this session. Browser storage is unavailable.'; }
     }
     $('removeBackground').addEventListener('click', removeImage);
-    let activePanel = null, returnFocus = null;
-    function closePanel(focus = true) {
-      if (!activePanel) return;
-      activePanel.hidden = true; activePanel = null;
-      document.querySelectorAll('[data-customize]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
-      if (focus) returnFocus?.focus();
+    let activeSection = 'topbar';
+    function selectSection(section) {
+      activeSection = section;
+      document.querySelectorAll('.customize-panel').forEach((panel) => { panel.hidden = panel.id !== `customize-${section}`; });
+      document.querySelectorAll('[data-customize]').forEach((button) => {
+        const active = button.dataset.customize === section;
+        button.setAttribute('aria-expanded', String(active));
+        if (active) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
+      });
     }
-    function closeDock() {
-      $('customizeDock').hidden = true;
+    function closeWorkspace(focus = true) {
+      $('customizeWorkspace').hidden = true;
       $('customizeButton').setAttribute('aria-expanded', 'false');
-      document.body.classList.remove('customizing');
+      if (focus) $('customizeButton').focus();
     }
     $('customizeButton').addEventListener('click', () => {
-      const open = $('customizeDock').hidden;
-      closePanel(false);
-      $('customizeDock').hidden = !open;
-      $('customizeButton').setAttribute('aria-expanded', String(open));
-      document.body.classList.toggle('customizing', open);
-      if (open) document.dispatchEvent(new Event('gatita:customize'));
-    });
-    document.querySelectorAll('[data-customize]').forEach((button) => button.addEventListener('click', () => {
-      const panel = $(`customize-${button.dataset.customize}`), wasOpen = activePanel === panel;
-      closePanel(false);
-      if (wasOpen) return;
+      if (!$('customizeWorkspace').hidden) { closeWorkspace(); return; }
       document.dispatchEvent(new Event('gatita:customize'));
-      returnFocus = button; activePanel = panel; panel.hidden = false;
-      document.querySelectorAll(`[data-customize="${button.dataset.customize}"]`).forEach((trigger) => trigger.setAttribute('aria-expanded', 'true'));
-      panel.querySelector('[data-close-customize]').focus();
-    }));
-    document.querySelectorAll('[data-close-customize]').forEach((button) => button.addEventListener('click', () => closePanel()));
+      selectSection(activeSection);
+      $('customizeWorkspace').hidden = false;
+      $('customizeButton').setAttribute('aria-expanded', 'true');
+      $('customizeDock').querySelector(`[data-customize="${activeSection}"]`).focus();
+    });
+    $('closeCustomize').addEventListener('click', () => closeWorkspace());
+    document.querySelectorAll('[data-customize]').forEach((button) => button.addEventListener('click', () => selectSection(button.dataset.customize)));
     document.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape') return;
-      if (activePanel) { event.stopImmediatePropagation(); closePanel(); }
-      else if (!$('customizeDock').hidden) { closeDock(); $('customizeButton').focus(); }
+      if (event.key === 'Escape' && !$('customizeWorkspace').hidden) { event.stopImmediatePropagation(); closeWorkspace(); }
     });
     document.addEventListener('click', (event) => {
-      if (event.target.closest('.customize-panel, .customize-dock, [data-customize], #customizeButton')) return;
-      closePanel(false); closeDock();
+      if (!event.target.closest('#customizeWorkspace, #customizeButton')) closeWorkspace(false);
     });
     document.querySelectorAll('[data-appearance]').forEach((input) => input.addEventListener(input.type === 'range' ? 'input' : 'change', () => {
       prefs[input.dataset.appearance] = input.type === 'checkbox' ? input.checked : input.type === 'range' ? Number(input.value) : input.value;

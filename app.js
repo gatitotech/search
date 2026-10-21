@@ -128,6 +128,7 @@
       toggleTheme(false);
     }
   }
+  document.addEventListener('gatita:customize', () => toggleSettings(false));
   $('settingsButton').addEventListener('click', () => toggleSettings($('settingsPanel').hidden));
   $('closeSettings').addEventListener('click', () => toggleSettings(false));
   $('appearanceButton').addEventListener('click', () => toggleTheme($('themePanel').hidden));

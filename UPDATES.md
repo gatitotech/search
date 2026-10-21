@@ -1,3 +1,17 @@
+# Search updates · October 21, 2026
+
+## Make it yours
+
+The Customize button opens four small editors: Top bar, Footer, Backdrop, and Reading & layout. The footer and home news heading also have direct customization shortcuts. Changes preview immediately, save in this browser after acceptance, and each section can reset independently. Existing backdrop, image, reading, and theme preferences carry over.
+
+Top bar and footer each offer Solid, Soft glass, and Clear presets plus independent opacity and blur sliders. They use the current theme colors. The top bar also supports search-field opacity, scrolling or sticky placement, three heights, and a logo toggle. Footer options include pinned or page-end placement, centered alignment, compact spacing, and its divider.
+
+Reading & layout includes home search position, desktop news columns, news and image visibility, alongside the existing typography, spacing, corners, and motion controls. News columns collapse to one on phones. All controls have labels, keyboard access, Escape dismissal, and focus return. Storage failures keep changes usable for the current session.
+
+Validation: `node --test appearance.test.cjs markdown.test.cjs`; desktop and mobile browser checks cover live styles, persistence, per-section reset, focus return, and viewport overflow.
+
+---
+
 # Search updates · October 18, 2026
 
 The search bar stays centered on the home page and moves into alignment with the results after a search. Results reserve their desktop space before an intelligent card arrives. Reduced-motion preferences disable the movement. The extra captions and eyebrows have been removed, and the summary is now called “Gatita’s Results.”
